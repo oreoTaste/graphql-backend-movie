@@ -1,0 +1,10 @@
+type movie {
+  id: Int!
+  name: String!
+  score: Int!
+}
+
+type Query {
+  movies: [movie]!
+  movie(id: Int!): movie!
+}
