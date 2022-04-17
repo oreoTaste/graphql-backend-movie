@@ -1,51 +1,32 @@
-let movies = [
-    {
-        id: 1,
-        name: "Matrix",
-        score: 100
-    },
-    {
-        id: 2,
-        name: "The way out",
-        score: 88
-    },
-    {
-        id: 3,
-        name: "Fantastic Beast",
-        score: 90
-    },
-    {
-        id: 4,
-        name: "Sonic the Hedgehog 2",
-        score: 93
-    },
-    {
-        id: 5,
-        name: "Ambulance",
-        score: 97
-    },
-    {
-        id: 6,
-        name: "The Lost City",
-        score: 95        
-    }
-]
+import fetch from "cross-fetch";
 
-export const findById = (id) => movies.filter(movie => movie.id === id)?.shift();
-export const findAll = () => movies;
-export const deleteById = (id) => {
+let movieList = [];
+async function sourceMovies() {
+    if(movieList.length < 1) {
+        const MOVIE_API = 'https://yts.mx/api/v2/list_movies.json?limit=5&minimum_rating=9&sort_by=year&order_by=desc';
+        const response = await fetch(MOVIE_API);
+        const {data: {movies}} = await response.json();
+        movieList = movies;
+    }
+    return movieList;
+}
+export const findAll = async () => sourceMovies();
+export const findById = async (id) => findAll().then(list => list.filter(movie => movie.id === id)?.shift());
+export const deleteById = async (id) => {
+    let movies = await findAll();
     let filtered = movies.filter(movie => movie.id !== id)
-    if(filtered.length < findAll().length) {
-        movies = filtered;
+    if(filtered.length < movies.length) {
+        movieList = filtered;
         return true
     } else {
         return false
     }
 }
-export const addMovie = (name, score) => {
-    let newMovie = {id: 1 + findAll().reduce((pre_id, {id, name, score}, ind, arr) => Math.max(pre_id, id), 0),
-                    name,
-                    score};
-    movies.push(newMovie);
+export const addMovie = async (title, rating) => {
+    let movies = await findAll();
+    let newMovie = {id: 1 + movies.reduce((pre_id, {id, title, rating}, ind, arr) => Math.max(pre_id, id), 0),
+                    title,
+                    rating};
+    movieList.push(newMovie);
     return newMovie;
 }
