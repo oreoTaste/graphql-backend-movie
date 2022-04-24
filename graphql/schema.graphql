@@ -2,6 +2,11 @@ type Movie {
     id: Int!
     title: String!
     rating: Float!
+    medium_cover_image: String!
+    large_cover_image: String!
+    summary: String!
+    year : Int!
+    genres : [String]!
 }
 
 type Query {
